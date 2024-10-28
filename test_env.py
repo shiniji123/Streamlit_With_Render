@@ -1,10 +1,16 @@
+import psycopg2
 from dotenv import load_dotenv
 import os
 
-# โหลดค่า Environment Variables จากไฟล์ .env
+# โหลด Environment Variables
 load_dotenv()
 
-# เข้าถึงค่าจากตัวแปรใน .env
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-print(f"Database URL: {DATABASE_URL}")
+try:
+    # เชื่อมต่อกับฐานข้อมูล
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    print("Connected to the database successfully!")
+    conn.close()
+except Exception as e:
+    print(f"Error connecting to database: {e}")
