@@ -11,10 +11,18 @@ CONNECTION_STRING = "postgresql://anucha:q9D3933OODrMo7hIJHLfaxPeqQlLFQat@dpg-cs
 def get_connection():
     try:
         conn = psycopg2.connect(CONNECTION_STRING)
+        st.write("Connection established")
         return conn
+    except psycopg2.OperationalError as e:
+        st.error(f"Operational error: {e}")
+        st.write(f"Detail: {e.diag.message_detail}")
+    except psycopg2.Error as e:
+        st.error(f"Database error: {e.pgcode} - {e.pgerror}")
+        st.write(f"Detail: {e.diag.message_detail}")
     except Exception as e:
-        st.error(f"Failed to connect to the database: {e}")
-        return None
+        st.error(f"Unexpected error: {e}")
+    return None
+
 
 # ฟังก์ชันสำหรับการดึงข้อมูล
 def fetch_data(query):
