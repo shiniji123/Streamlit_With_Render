@@ -19,39 +19,31 @@ def get_connection():
 # ฟังก์ชันสำหรับการดึงข้อมูล
 def fetch_data(query):
     conn = get_connection()
-    if conn is not None:
-        try:
-            with conn.cursor() as cursor:
-                cursor.execute(query)
-                df = pd.DataFrame(cursor.fetchall(), columns=[desc[0] for desc in cursor.description])
-                return df
-        except Exception as e:
-            st.error(f"Failed to fetch data: {e}")
-            return pd.DataFrame()
-        finally:
-            conn.close()  # ปิดการเชื่อมต่อหลังจากเสร็จสิ้น
-    else:
-        st.error("No connection to the database.")
+    try:
+        df = pd.read_sql(query, conn)
+        return df
+    except Exception as e:
+        st.error(f"Failed to fetch data: {e}")
         return pd.DataFrame()
+    finally:
+        conn.close()
 
-# ฟังก์ชันสำหรับการเพิ่มข้อมูล (ปรับปรุง)
+# ฟังก์ชันสำหรับการเพิ่มข้อมูล
 def execute_query(query, params=None):
     conn = get_connection()
-    if conn is not None:
-        try:
-            with conn.cursor() as cursor:
-                if params:
-                    cursor.execute(query, params)
-                else:
-                    cursor.execute(query)
-                conn.commit()
-                st.success("Operation successful!")
-        except Exception as e:
-            st.error(f"Operation failed: {e}")
-        finally:
-            conn.close()  # ปิดการเชื่อมต่อหลังจากเสร็จสิ้น
-    else:
-        st.error("No connection to the database.")
+    cursor = conn.cursor()
+    try:
+        if params:
+            cursor.execute(query, params)
+        else:
+            cursor.execute(query)
+        conn.commit()
+        st.success("Operation successful!")
+    except Exception as e:
+        st.error(f"Operation failed: {e}")
+    finally:
+        cursor.close()
+        conn.close()
 
 # ฟังก์ชันสำหรับสร้างตารางในฐานข้อมูล
 def create_tables():
