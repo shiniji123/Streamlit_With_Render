@@ -25,11 +25,14 @@ def fetch_data(query):
                 cursor.execute(query)
                 df = pd.DataFrame(cursor.fetchall(), columns=[desc[0] for desc in cursor.description])
                 return df
+        except psycopg2.Error as e:
+            st.error(f"Database error: {e.pgcode} - {e.pgerror}")
+            return pd.DataFrame()
         except Exception as e:
             st.error(f"Failed to fetch data: {e}")
             return pd.DataFrame()
         finally:
-            conn.close()  # ปิดการเชื่อมต่อหลังจากเสร็จสิ้น
+            conn.close()
     else:
         st.error("No connection to the database.")
         return pd.DataFrame()
