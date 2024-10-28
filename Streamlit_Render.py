@@ -180,7 +180,7 @@ if role == "Admin":
     # Tab 1: Manage Students
     with tab1:
         st.subheader("Students List")
-        students = fetch_data("SELECT * FROM students")
+        students = fetch_data("SELECT * FROM Students")
         st.dataframe(students)
 
         st.subheader("Add/Update Student")
@@ -198,7 +198,7 @@ if role == "Admin":
             if submit_student:
                 if student_id:
                     query = '''
-                        INSERT INTO students (student_id, first_name, last_name, email, contact_number, address, enrollment_date, student_password)
+                        INSERT INTO Students (student_id, first_name, last_name, email, contact_number, address, enrollment_date, student_password)
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                         ON CONFLICT (student_id) DO UPDATE SET 
                         first_name = EXCLUDED.first_name,
@@ -215,7 +215,7 @@ if role == "Admin":
     # Tab 2: Manage Courses
     with tab2:
         st.subheader("Courses List")
-        courses = fetch_data("SELECT * FROM courses")
+        courses = fetch_data("SELECT * FROM Courses")
         st.dataframe(courses)
 
         st.subheader("Add/Update Course")
@@ -230,7 +230,7 @@ if role == "Admin":
             if submit_course:
                 if course_id:
                     query = '''
-                        INSERT INTO courses (course_id, course_name, credits, department_id, instructor_id)
+                        INSERT INTO Courses (course_id, course_name, credits, department_id, instructor_id)
                         VALUES (%s, %s, %s, %s, %s)
                         ON CONFLICT (course_id) DO UPDATE SET 
                         course_name = EXCLUDED.course_name,
@@ -244,7 +244,7 @@ if role == "Admin":
     # Tab 3: Manage Enrollments
     with tab3:
         st.subheader("Enrollments List")
-        enrollments = fetch_data("SELECT * FROM enrollments")
+        enrollments = fetch_data("SELECT * FROM Enrollments")
         st.dataframe(enrollments)
 
         st.subheader("Add Enrollment")
@@ -259,7 +259,7 @@ if role == "Admin":
             if submit_enrollment:
                 if student_id and course_id:
                     query = '''
-                        INSERT INTO enrollments (student_id, course_id, semester, year, enrollment_date)
+                        INSERT INTO Enrollments (student_id, course_id, semester, year, enrollment_date)
                         VALUES (%s, %s, %s, %s, %s);
                     '''
                     params = (student_id, course_id, semester, year, enrollment_date)
@@ -270,7 +270,7 @@ elif role == "Student":
     student_id = st.text_input("Enter Your Student ID")
 
     if student_id:
-        enrolled_courses = fetch_data(f"SELECT * FROM enrollments WHERE student_id = {student_id}")
+        enrolled_courses = fetch_data(f"SELECT * FROM Enrollments WHERE student_id = {student_id}")
         st.subheader(f"Enrolled Courses for Student ID: {student_id}")
         st.dataframe(enrolled_courses)
 
@@ -279,7 +279,7 @@ elif role == "Student":
         if st.button("Withdraw"):
             if course_to_withdraw:
                 query = '''
-                    DELETE FROM enrollments WHERE student_id = %s AND course_id = %s;
+                    DELETE FROM Enrollments WHERE student_id = %s AND course_id = %s;
                 '''
                 params = (student_id, course_to_withdraw)
                 execute_query(query, params)
